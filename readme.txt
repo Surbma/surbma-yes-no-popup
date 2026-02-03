@@ -1,7 +1,7 @@
 === CPS | Age Verification ===
 Contributors: CherryPickStudios, Surbma
 Donate link: https://surbma.com/donate/
-Tags: age verify, age verification, woocommerce, popup, yes/no, adult, confirmation, restrict
+Tags: age verify, age verification, adult, confirmation, restrict
 Requires at least: 5.2
 Tested up to: 6.9
 Stable tag: 8.0
@@ -9,7 +9,7 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Shows a popup with age verification options. One of the best plugin for any membership or 18+ adult sites or any sites, that requires confirmation from a visitor.
+An easy to use age verification plugin for any membership or 18+ adult sites or any sites, that requires confirmation from a visitor.
 
 == Description ==
 

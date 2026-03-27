@@ -1,2 +1,7 @@
 *codekit*
 .DS_Store
+vendor
+composer.lock
+.phpunit.cache
+coverage-html
+coverage.xml

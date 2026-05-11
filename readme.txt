@@ -3,8 +3,8 @@ Contributors: CherryPickStudios, Surbma
 Donate link: https://surbma.com/donate/
 Tags: age verify, age verification, adult, confirmation, restrict
 Requires at least: 5.2
-Tested up to: 6.9
-Stable tag: 8.0
+Tested up to: 7.0
+Stable tag: 8.0.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,20 @@ This plugin shows a simple popup with two options: Yes or No. One option is set 
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 8.0.1 =
+
+Release date: 2026-05-11
+
+OTHER
+
+- Removed the `load_plugin_textdomain()` call.
+- Tested with WordPress 7.0 version.
+
+PREMIUM
+
+- Freemius SDK updated to latest version.
+- Minimum PHP requirement updated to 7.4 version.
 
 = 8.0 =
 

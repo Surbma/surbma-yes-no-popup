@@ -5,7 +5,7 @@ Plugin Name: CPS | Age Verification
 Plugin URI: https://surbma.com/wordpress-plugins/
 Description: Shows a popup with age verification options.
 
-Version: 8.0
+Version: 8.0.1
 
 Author: CherryPickStudios
 Author URI: https://www.cherrypickstudios.com/
@@ -22,11 +22,6 @@ if ( !defined( 'ABSPATH' ) ) exit( 'Good try! :)' );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_FILE', __FILE__ );
-
-// Localization
-add_action( 'plugins_loaded', function() {
-	load_plugin_textdomain( 'surbma-yes-no-popup', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-} );
 
 // Freemius SDK wrap to prevent conflicts with premium version.
 if ( function_exists( 'surbma_ynp_fs' ) ) {

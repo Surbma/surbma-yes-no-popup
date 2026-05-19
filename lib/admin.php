@@ -1,9 +1,7 @@
 <?php
 
-include_once( SURBMA_YES_NO_POPUP_PLUGIN_DIR . '/pages/settings.php');
-
 /* Admin options menu */
-function surbma_yes_no_popup_add_menus() {
+add_action( 'admin_menu', function() {
 	global $surbma_yes_no_popup_settings_page;
 	$surbma_yes_no_popup_settings_page = add_submenu_page(
 		'cps-plugins-menu',
@@ -13,8 +11,7 @@ function surbma_yes_no_popup_add_menus() {
 		'surbma-yes-no-popup-menu',
 		'surbma_yes_no_popup_settings_page'
 	);
-}
-add_action( 'admin_menu', 'surbma_yes_no_popup_add_menus' );
+} );
 
 // Custom styles and scripts for admin pages
 function surbma_yes_no_popup_admin_enqueue_scripts( $hook ) {

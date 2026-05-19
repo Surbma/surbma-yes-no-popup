@@ -4,7 +4,7 @@ Donate link: https://surbma.com/donate/
 Tags: age verify, age verification, adult, confirmation, restrict
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 8.0.1
+Stable tag: 8.1.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,27 @@ This plugin shows a simple popup with two options: Yes or No. One option is set 
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 8.1.0 =
+
+Release date: 2026-05-19
+
+FIXED
+
+- Fixed `_load_textdomain_just_in_time` PHP notice on WordPress 6.7+ (translations are now loaded on `init`, not before).
+- Fixed admin settings menu missing and “Sorry, you are not allowed to access this page” when opening the settings screen directly.
+- Fixed PHP warnings on the settings page when no options have been saved yet (fresh install).
+- Fixed incorrect use of `esc_attr__()` and `esc_attr_e()` on dynamic option values in the popup output and settings fields (now uses `esc_attr()`, `esc_url()`, and integer casting where appropriate).
+
+OTHER
+
+- Restored `load_plugin_textdomain()` on the `init` hook (replacing the 8.0.1 removal that did not resolve the notice).
+- Deferred translatable settings option labels to `admin_init` so they no longer run at plugin load time.
+- Tested with WordPress 7.0 version.
+
+PREMIUM
+
+- Freemius SDK updated to latest version.
 
 = 8.0.1 =
 

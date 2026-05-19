@@ -5,7 +5,7 @@ Plugin Name: CPS | Age Verification
 Plugin URI: https://surbma.com/wordpress-plugins/
 Description: Shows a popup with age verification options.
 
-Version: 8.0.1
+Version: 8.1.0
 
 Author: CherryPickStudios
 Author URI: https://www.cherrypickstudios.com/
@@ -22,6 +22,10 @@ if ( !defined( 'ABSPATH' ) ) exit( 'Good try! :)' );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_URL', plugins_url( '', __FILE__ ) );
 define( 'SURBMA_YES_NO_POPUP_PLUGIN_FILE', __FILE__ );
+
+add_action( 'init', function() {
+	load_plugin_textdomain( 'surbma-yes-no-popup', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}, 0 );
 
 // Freemius SDK wrap to prevent conflicts with premium version.
 if ( function_exists( 'surbma_ynp_fs' ) ) {
@@ -61,10 +65,17 @@ if ( !function_exists( 'cps' ) ) {
 	cps();
 }
 
-// Include files
+// admin_menu runs before admin_init in wp-admin; menu callbacks must register during plugin load.
 if ( is_admin() ) {
-	include_once( SURBMA_YES_NO_POPUP_PLUGIN_DIR . '/lib/admin.php' );
+	require_once SURBMA_YES_NO_POPUP_PLUGIN_DIR . 'pages/settings.php';
+	include_once SURBMA_YES_NO_POPUP_PLUGIN_DIR . '/lib/admin.php';
 }
+
+add_action( 'admin_init', function() {
+	if ( function_exists( 'surbma_yes_no_popup_register_settings' ) ) {
+		surbma_yes_no_popup_register_settings();
+	}
+}, 0 );
 
 add_action( 'wp_enqueue_scripts', function() {
 	$options = get_option( 'surbma_yes_no_popup_fields' );
@@ -197,12 +208,12 @@ add_action( 'wp_footer', function() {
 function surbma_yes_no_popup_block() {
 	$options = get_option( 'surbma_yes_no_popup_fields' );
 
-	$popupimageValue = SURBMA_YES_NO_POPUP_PLUGIN_LICENSE == 'valid' && isset( $options['popupimage'] ) ? esc_attr__( $options['popupimage'] ) : '';
+	$popupimageValue = SURBMA_YES_NO_POPUP_PLUGIN_LICENSE == 'valid' && isset( $options['popupimage'] ) ? esc_url( $options['popupimage'] ) : '';
 	$popuptitleValue = isset( $options['popuptitle'] ) ? stripslashes( $options['popuptitle'] ) : '';
 	$popuptextValue = isset( $options['popuptext'] ) ? stripslashes( $options['popuptext'] ) : '';
 	$popupbutton1textValue = isset( $options['popupbutton1text'] ) ? stripslashes( $options['popupbutton1text'] ) : '';
 	$popupbutton2textValue = isset( $options['popupbutton2text'] ) ? stripslashes( $options['popupbutton2text'] ) : '';
-	$popupbuttonurlValue = isset( $options['popupbuttonurl'] ) ? esc_attr__( $options['popupbuttonurl'] ) : '/';
+	$popupbuttonurlValue = isset( $options['popupbuttonurl'] ) ? esc_url( $options['popupbuttonurl'] ) : '/';
 	$popupbuttonoptionsValue = isset( $options['popupbuttonoptions'] ) ? $options['popupbuttonoptions'] : 'button-1-redirect';
 
 	$popupimagealignmentValue = SURBMA_YES_NO_POPUP_PLUGIN_LICENSE == 'valid' && isset( $options['popupimagealignment'] ) ? $options['popupimagealignment'] : 'left';
@@ -275,7 +286,7 @@ function surbma_yes_no_popup_block() {
 		// console.log('show_modal: '+show_modal);
 	});
 </script>
-<div id="surbma-yes-no-popup" class="uk-modal surbma-yes-no-popup-<?php echo $popupthemesValue; ?><?php echo $popupdarkmodeValue; ?><?php echo $popupcentertextValue; ?> surbma-yes-no-popup-<?php echo $popupstylesValue; ?>" style="background-image: url(<?php echo esc_attr_e( $popupbackgroundimageValue ); ?>);background-size: cover;background-repeat: no-repeat;">
+<div id="surbma-yes-no-popup" class="uk-modal surbma-yes-no-popup-<?php echo esc_attr( $popupthemesValue ); ?><?php echo esc_attr( $popupdarkmodeValue ); ?><?php echo esc_attr( $popupcentertextValue ); ?> surbma-yes-no-popup-<?php echo esc_attr( $popupstylesValue ); ?>" style="background-image: url(<?php echo esc_url( $popupbackgroundimageValue ); ?>);background-size: cover;background-repeat: no-repeat;">
 	<div class="uk-modal-dialog<?php echo $popuplargeValue; ?>">
 		<?php if( $popupclosebuttonValue == 1 ) { ?>
 			<a class="uk-modal-close uk-close"></a>
@@ -283,7 +294,7 @@ function surbma_yes_no_popup_block() {
 		<?php if( $popupimageValue != '' || $popuptitleValue != '' ) { ?>
 			<div class="uk-modal-header">
 				<?php if( $popupimageValue != '' ) { ?>
-					<p class="surbma-yes-no-popup-image-<?php echo $popupimagealignmentValue; ?>"><img src="<?php echo $popupimageValue; ?>" class="" alt="<?php echo esc_attr__( $popuptitleValue ); ?>"></p>
+					<p class="surbma-yes-no-popup-image-<?php echo esc_attr( $popupimagealignmentValue ); ?>"><img src="<?php echo esc_url( $popupimageValue ); ?>" class="" alt="<?php echo esc_attr( $popuptitleValue ); ?>"></p>
 				<?php } ?>
 				<?php if( $popuptitleValue != '' ) { ?>
 					<h2><a href="#"></a><?php echo $popuptitleValue; ?></h2>
@@ -294,9 +305,9 @@ function surbma_yes_no_popup_block() {
 			<div class="uk-modal-content"><?php echo $popuptextValue; ?></div>
 		<?php } ?>
 		<div class="uk-modal-footer surbma-yes-no-popup-button-<?php echo $popupbuttonalignmentValue; ?>">
-			<button id="button1" type="button" class="uk-button uk-button-<?php echo $popupbuttonsizeValue; ?> uk-button-<?php echo esc_attr_e( $popupbutton1styleValue ); ?><?php if( $popupbuttonoptionsValue != 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton1textValue; ?></button>
+			<button id="button1" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton1styleValue ); ?><?php if( $popupbuttonoptionsValue != 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton1textValue; ?></button>
 			<?php if( $popuphidebutton2Value != 1 ) { ?>
-				<button id="button2" type="button" class="uk-button uk-button-<?php echo $popupbuttonsizeValue; ?> uk-button-<?php echo esc_attr_e( $popupbutton2styleValue ); ?><?php if( $popupbuttonoptionsValue == 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton2textValue; ?></button>
+				<button id="button2" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton2styleValue ); ?><?php if( $popupbuttonoptionsValue == 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton2textValue; ?></button>
 			<?php } ?>
 		</div>
 	</div>
@@ -304,7 +315,7 @@ function surbma_yes_no_popup_block() {
 <script type="text/javascript">
 	function surbma_ynp_setCookie() {
 		var d = new Date();
-		d.setTime(d.getTime() + (<?php echo esc_attr_e( $popupcookiedaysValue ); ?>*24*60*60*1000));
+		d.setTime(d.getTime() + (<?php echo (int) $popupcookiedaysValue; ?>*24*60*60*1000));
 		var expires = "expires="+ d.toUTCString();
 		document.cookie = "surbma-yes-no-popup=yes;" + expires + ";path=/";
 	}

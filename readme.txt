@@ -4,7 +4,7 @@ Donate link: https://surbma.com/donate/
 Tags: age verify, age verification, adult, confirmation, restrict
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 8.1.0
+Stable tag: 8.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,21 @@ This plugin shows a simple popup with two options: Yes or No. One option is set 
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 8.1.1 =
+
+Release date: 2026-06-22
+
+FIXED
+
+- Fixed visitor confirmation cookie not being saved, which caused the age verification popup to appear on every page load.
+- Fixed popup button click handlers not firing when another plugin on the same page also used generic `button1` / `button2` element IDs.
+- Fixed the popup markup being scheduled more than once per page when multiple visibility rules matched at the same time.
+
+OTHER
+
+- Popup action buttons now use unique IDs (`surbma-ynp-button1`, `surbma-ynp-button2`) and bind events within the popup modal container.
+- Popup output is now rendered only once per page load.
 
 = 8.1.0 =
 

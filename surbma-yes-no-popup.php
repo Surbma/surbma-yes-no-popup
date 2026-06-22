@@ -5,7 +5,7 @@ Plugin Name: CPS | Age Verification
 Plugin URI: https://surbma.com/wordpress-plugins/
 Description: Shows a popup with age verification options.
 
-Version: 8.1.0
+Version: 8.1.1
 
 Author: CherryPickStudios
 Author URI: https://www.cherrypickstudios.com/
@@ -85,84 +85,93 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 999 );
 
 add_action( 'wp_footer', function() {
+	static $visibility_checked = false;
+
+	if ( $visibility_checked ) {
+		return;
+	}
+
+	$visibility_checked = true;
+
 	$options = get_option( 'surbma_yes_no_popup_fields' );
+	$show_popup = false;
 
 	$popupshoweverywhereValue = isset( $options['popupshoweverywhere'] ) ? $options['popupshoweverywhere'] : 0;
 	$popupexcepthereValue = isset( $options['popupexcepthere'] ) ? $options['popupexcepthere'] : '';
 
 	if( $popupshoweverywhereValue == 1 && $popupexcepthereValue == '' ) {
-		add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+		$show_popup = true;
 	} elseif( $popupshoweverywhereValue == 1 && $popupexcepthereValue != '' && !is_page( $popupexcepthereValue ) ) {
-		add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+		$show_popup = true;
 	} else {
 		if( isset( $options['popupshowfrontpage'] ) && $options['popupshowfrontpage'] == 1 && is_front_page() ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		if( isset( $options['popupshowblog'] ) && $options['popupshowblog'] == 1 && is_home() ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		if( class_exists( 'WooCommerce' ) ) {
 			if( isset( $options['popupshowarchive'] ) && $options['popupshowarchive'] == 1 && is_archive() && ( !is_shop() && !is_product_category() && !is_product_tag() ) ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 		} else {
 			if( isset( $options['popupshowarchive'] ) && $options['popupshowarchive'] == 1 && is_archive() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 		}
 
 		foreach ( get_post_types( array( 'public' => true ), 'objects' ) as $post_type ) {
 			$popupshowcpt = 'popupshowcpt-' . $post_type->name;
 			if( isset( $options[$popupshowcpt] ) && $options[$popupshowcpt] != '' && is_singular( $post_type->name ) ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 		}
 
 		$includeposts = isset( $options['popupshowposts'] ) ? explode( ',', $options['popupshowposts'] ) : '';
 		if( $includeposts != '' && is_single( $includeposts ) ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		$includepages = isset( $options['popupshowpages'] ) ? explode( ',', $options['popupshowpages'] ) : '';
 		if( $includepages != '' && is_page( $includepages ) ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		$includecategories = isset( $options['popupshowcategories'] ) ? explode( ',', $options['popupshowcategories'] ) : '';
 		if( $includecategories != '' && $options['popupshowarchive'] != 1 && ( is_category( $includecategories ) || in_category( $includecategories ) ) ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		$includetags = isset( $options['popupshowtags'] ) ? explode( ',', $options['popupshowtags'] ) : '';
 		if( $includetags != '' && $options['popupshowarchive'] != 1 && ( is_tag( $includetags ) || has_tag( $includetags ) ) ) {
-			add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+			$show_popup = true;
 		}
 
 		if( SURBMA_YES_NO_POPUP_PLUGIN_LICENSE == 'valid' && class_exists( 'WooCommerce' ) ) {
 			if( isset( $options['popupshowwcshop'] ) && $options['popupshowwcshop'] == 1 && is_shop() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			if( isset( $options['popupshowwccart'] ) && $options['popupshowwccart'] == 1 && is_cart() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			if( isset( $options['popupshowwccheckout'] ) && $options['popupshowwccheckout'] == 1 && is_checkout() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			if( isset( $options['popupshowwcaccount'] ) && $options['popupshowwcaccount'] == 1 && is_account_page() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			if( isset( $options['popupshowwcproductcategory'] ) && $options['popupshowwcproductcategory'] == 1 && is_product_category() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			if( isset( $options['popupshowwcproducttag'] ) && $options['popupshowwcproducttag'] == 1 && is_product_tag() ) {
-				add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+				$show_popup = true;
 			}
 
 			// Check popup activation on single product pages
@@ -171,7 +180,7 @@ add_action( 'wp_footer', function() {
 				$popupshowwcproducts_value = isset( $options['popupshowwcproducts'] ) ? $options['popupshowwcproducts'] : 0;
 
 				if( 1 == $popupshowwcproducts_value ) {
-					add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+					$show_popup = true;
 				} else {
 					// Get the current queried object
 					$current_object = get_queried_object();
@@ -183,7 +192,7 @@ add_action( 'wp_footer', function() {
 					$includeproductcategories = isset( $options['popupshowproductcategories'] ) ? explode( ',', $options['popupshowproductcategories'] ) : array();
 
 					if ( !empty( array_intersect( $currentproductcategories, $includeproductcategories ) ) ) {
-						add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+						$show_popup = true;
 					}
 				}
 			}
@@ -198,14 +207,26 @@ add_action( 'wp_footer', function() {
 				$includeproductcategories = isset( $options['popupshowproductcategories'] ) ? explode( ',', $options['popupshowproductcategories'] ) : array();
 
 				if ( !empty( array_intersect( $currentproductcategory, $includeproductcategories ) ) ) {
-					add_action( 'wp_footer', 'surbma_yes_no_popup_block', 999 );
+					$show_popup = true;
 				}
 			}
 		}
 	}
-} );
+
+	if ( $show_popup ) {
+		surbma_yes_no_popup_block();
+	}
+}, 999 );
 
 function surbma_yes_no_popup_block() {
+	static $rendered = false;
+
+	if ( $rendered ) {
+		return;
+	}
+
+	$rendered = true;
+
 	$options = get_option( 'surbma_yes_no_popup_fields' );
 
 	$popupimageValue = SURBMA_YES_NO_POPUP_PLUGIN_LICENSE == 'valid' && isset( $options['popupimage'] ) ? esc_url( $options['popupimage'] ) : '';
@@ -305,9 +326,9 @@ function surbma_yes_no_popup_block() {
 			<div class="uk-modal-content"><?php echo $popuptextValue; ?></div>
 		<?php } ?>
 		<div class="uk-modal-footer surbma-yes-no-popup-button-<?php echo $popupbuttonalignmentValue; ?>">
-			<button id="button1" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton1styleValue ); ?><?php if( $popupbuttonoptionsValue != 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton1textValue; ?></button>
+			<button id="surbma-ynp-button1" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton1styleValue ); ?><?php if( $popupbuttonoptionsValue != 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton1textValue; ?></button>
 			<?php if( $popuphidebutton2Value != 1 ) { ?>
-				<button id="button2" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton2styleValue ); ?><?php if( $popupbuttonoptionsValue == 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton2textValue; ?></button>
+				<button id="surbma-ynp-button2" type="button" class="uk-button uk-button-<?php echo esc_attr( $popupbuttonsizeValue ); ?> uk-button-<?php echo esc_attr( $popupbutton2styleValue ); ?><?php if( $popupbuttonoptionsValue == 'button-1-redirect' ) echo ' uk-modal-close'; ?>"><?php echo $popupbutton2textValue; ?></button>
 			<?php } ?>
 		</div>
 	</div>
@@ -326,19 +347,37 @@ function surbma_yes_no_popup_block() {
 		return '';
 	}
 	<?php if( $popupbuttonoptionsValue != 'button-1-redirect' ) { ?>
-		document.getElementById("button1").onclick = function () {
-			surbma_ynp_setCookie();
-		};
-		document.getElementById("button2").onclick = function () {
-			location.href = "<?php echo $popupbuttonurlValue; ?>";
-		};
+		(function() {
+			var modal = document.getElementById('surbma-yes-no-popup');
+			var btn1 = modal ? modal.querySelector('#surbma-ynp-button1') : null;
+			var btn2 = modal ? modal.querySelector('#surbma-ynp-button2') : null;
+			if ( btn1 ) {
+				btn1.onclick = function () {
+					surbma_ynp_setCookie();
+				};
+			}
+			if ( btn2 ) {
+				btn2.onclick = function () {
+					location.href = "<?php echo $popupbuttonurlValue; ?>";
+				};
+			}
+		})();
 	<?php } else { ?>
-		document.getElementById("button1").onclick = function () {
-			location.href = "<?php echo $popupbuttonurlValue; ?>";
-		};
-		document.getElementById("button2").onclick = function () {
-			surbma_ynp_setCookie();
-		};
+		(function() {
+			var modal = document.getElementById('surbma-yes-no-popup');
+			var btn1 = modal ? modal.querySelector('#surbma-ynp-button1') : null;
+			var btn2 = modal ? modal.querySelector('#surbma-ynp-button2') : null;
+			if ( btn1 ) {
+				btn1.onclick = function () {
+					location.href = "<?php echo $popupbuttonurlValue; ?>";
+				};
+			}
+			if ( btn2 ) {
+				btn2.onclick = function () {
+					surbma_ynp_setCookie();
+				};
+			}
+		})();
 	<?php } ?>
 </script>
 <?php

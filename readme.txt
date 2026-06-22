@@ -4,7 +4,7 @@ Donate link: https://surbma.com/donate/
 Tags: age verify, age verification, adult, confirmation, restrict
 Requires at least: 5.2
 Tested up to: 7.0
-Stable tag: 8.1.1
+Stable tag: 8.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -152,6 +152,34 @@ This plugin shows a simple popup with two options: Yes or No. One option is set 
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 8.2.0 =
+
+Release date: 2026-06-22
+
+FIXED
+
+- Fixed broken `allowed_tags()` call on the settings page that could cause a fatal error when viewing allowed HTML tags help text.
+- Fixed missing `popupshowposts` field sanitization when saving settings.
+- Removed duplicate `popupshowpages` sanitization line in the settings validator.
+
+OTHER
+
+- Standardized direct-access guards (`defined( 'ABSPATH' ) || exit`) across all plugin PHP files.
+- Added proper output escaping across popup markup, admin screens, and CPS SDK templates (`esc_html`, `esc_attr`, `esc_url`, `esc_js`, `wp_kses_post`).
+- Replaced `stripslashes()` with `wp_unslash()` before escaping stored option values.
+- Popup title, text, and button labels are now escaped on output; popup text uses `wp_kses_post()`.
+- Enqueued popup CSS filename is now sanitized with `sanitize_file_name()`.
+- Settings page `$_GET['settings-updated']` check and premium/free field output hardened.
+- CPS plugins page remote JSON output is escaped; invalid API responses are handled safely.
+- Admin sidebar and welcome notice URLs and HTML output sanitized.
+- Code formatting aligned with WordPress and project PHP style rules.
+
+PREMIUM
+
+- Freemius SDK updated to latest version.
+- Freemius bootstrap uses the premium plugin directory constant.
+- Text domain loading path aligned with WordPress best practices.
 
 = 8.1.1 =
 

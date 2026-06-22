@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 function cps_plugins_page() {
 ?>
 <div class="cps-admin cps-plugins-page">
@@ -10,45 +12,51 @@ function cps_plugins_page() {
 		<div class="uk-child-width-1-2@s uk-child-width-1-3@m uk-child-width-1-3@l" uk-grid="masonry: false;" uk-height-match="target: > div > .uk-card > .uk-card-body">
 		<?php
 			$response = wp_remote_get( 'https://www.cherrypickstudios.com/cps-plugins.json' );
-			if( is_wp_error( $response ) ) return false;
+			if ( is_wp_error( $response ) ) {
+				return;
+			}
 			$json = wp_remote_retrieve_body( $response );
 			$plugins = json_decode( $json, true );
 
-			foreach ( $plugins as $plugin ) {
-				$title = isset( $plugin['title'] ) && $plugin['title'] != '' ? $plugin['title'] : '';
-				$img = isset( $plugin['img'] ) && $plugin['img'] != '' ? $plugin['img'] : false;
-				$badge = isset( $plugin['badge'] ) && $plugin['badge'] != '' ? $plugin['badge'] : false;
-				$description = isset( $plugin['description'] ) && $plugin['description'] != '' ? $plugin['description'] : false;
-				$alert = isset( $plugin['alert'] ) && $plugin['alert'] != '' ? $plugin['alert'] : false;
-				$url = isset( $plugin['url'] ) && $plugin['url'] != '' ? $plugin['url'] : false;
-				$button = isset( $plugin['button'] ) && $plugin['button'] != '' ? $plugin['button'] : 'Visit Plugin Page';
+			if ( ! is_array( $plugins ) ) {
+				return;
+			}
 
-				if( $title != '' ) { ?>
+			foreach ( $plugins as $plugin ) {
+				$title = isset( $plugin['title'] ) && '' !== $plugin['title'] ? $plugin['title'] : '';
+				$img = isset( $plugin['img'] ) && '' !== $plugin['img'] ? $plugin['img'] : false;
+				$badge = isset( $plugin['badge'] ) && '' !== $plugin['badge'] ? $plugin['badge'] : false;
+				$description = isset( $plugin['description'] ) && '' !== $plugin['description'] ? $plugin['description'] : false;
+				$alert = isset( $plugin['alert'] ) && '' !== $plugin['alert'] ? $plugin['alert'] : false;
+				$url = isset( $plugin['url'] ) && '' !== $plugin['url'] ? $plugin['url'] : false;
+				$button = isset( $plugin['button'] ) && '' !== $plugin['button'] ? $plugin['button'] : 'Visit Plugin Page';
+
+				if ( '' !== $title ) { ?>
 				<div>
 					<div class="uk-card uk-card-default uk-card-hover">
 						<div class="uk-card-media-top uk-hidden" style="overflow: hidden;max-height: 200px;">
-							<?php if( $img != false ) { ?>
-							<img src="<?php echo $img; ?>" alt="<?php echo $title; ?>">
+							<?php if ( false !== $img ) { ?>
+							<img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $title ); ?>">
 							<?php } else { ?>
-							<img src="<?php echo CPS_URL; ?>/images/cps-logo.svg" alt="<?php echo $title; ?>" style="width: 200px;display: block;margin: 0 auto;padding: 50px;">
+							<img src="<?php echo esc_url( CPS_URL . '/images/cps-logo.svg' ); ?>" alt="<?php echo esc_attr( $title ); ?>" style="width: 200px;display: block;margin: 0 auto;padding: 50px;">
 							<?php } ?>
 						</div>
 						<div class="uk-card-body">
-							<?php if( $badge != false ) { ?>
-							<div class="uk-card-badge uk-label" style="padding: 5px 10px;top: -10px;"><?php echo $badge; ?></div>
+							<?php if ( false !== $badge ) { ?>
+							<div class="uk-card-badge uk-label" style="padding: 5px 10px;top: -10px;"><?php echo esc_html( $badge ); ?></div>
 							<?php } ?>
-							<h3 class="uk-card-title"><strong><?php echo $title; ?></strong></h3>
-							<?php if( $description != false ) echo $description; ?>
-							<?php if( $alert != false ) { ?>
-							<div class="uk-alert-primary uk-margin-top" uk-alert>
-								<?php echo $alert; ?>
+							<h3 class="uk-card-title"><strong><?php echo esc_html( $title ); ?></strong></h3>
+							<?php if ( false !== $description ) { echo wp_kses_post( $description ); } ?>
+							<?php if ( false !== $alert ) { ?>
+							<div class="uk-alert uk-alert-primary uk-margin-top" uk-alert>
+								<?php echo wp_kses_post( $alert ); ?>
 							</div>
 							<?php } ?>
-							<a id="purchase" class="uk-button uk-button-primary uk-width-1-1 uk-hidden" href="<?php echo $url; ?>" target="_blank"><?php _e( $button, 'cps-sdk' ); ?></a>
+							<a id="purchase" class="uk-button uk-button-primary uk-width-1-1 uk-hidden" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( __( $button, 'cps-sdk' ) ); ?></a>
 						</div>
-						<?php if( $url != false ) { ?>
+						<?php if ( false !== $url ) { ?>
 						<div class="uk-card-footer uk-background-muted">
-							<a id="purchase" class="uk-button uk-button-primary uk-width-1-1" href="<?php echo $url; ?>" target="_blank"><?php _e( $button, 'cps-sdk' ); ?></a>
+							<a id="purchase" class="uk-button uk-button-primary uk-width-1-1" href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( __( $button, 'cps-sdk' ) ); ?></a>
 						</div>
 						<?php } ?>
 					</div>

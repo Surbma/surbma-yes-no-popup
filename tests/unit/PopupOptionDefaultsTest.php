@@ -32,6 +32,7 @@ class PopupOptionDefaultsTest extends TestCase {
             'popuphideloggedin'      => [ 'popuphideloggedin',      null,          'Hide for logged-in unset by default' ],
             'popupdebug'             => [ 'popupdebug',             null,          'Debug mode unset by default' ],
             'popupclosebuttonValue'  => [ 'popupclosebutton',       null,          'Close button unset by default' ],
+            'popupoverlayopacity'    => [ 'popupoverlayopacity',    '0.6',         'Overlay opacity defaults to 0.6' ],
         ];
     }
 
@@ -54,6 +55,9 @@ class PopupOptionDefaultsTest extends TestCase {
             } elseif ( $key === 'popupexcepthere' ) {
                 $value = isset( $this->emptyOptions[ $key ] ) ? $this->emptyOptions[ $key ] : '';
                 $this->assertSame( '', $value, $description );
+            } elseif ( $key === 'popupoverlayopacity' ) {
+                $value = isset( $this->emptyOptions[ $key ] ) ? $this->emptyOptions[ $key ] : '0.6';
+                $this->assertSame( '0.6', $value, $description );
             } else {
                 $this->assertNull( $value, $description );
             }
@@ -85,5 +89,35 @@ class PopupOptionDefaultsTest extends TestCase {
         $options = [];
         $value   = isset( $options['popupexcepthere'] ) ? $options['popupexcepthere'] : '';
         $this->assertSame( '', $value );
+    }
+
+    /**
+     * Overlay opacity defaults to 0.6.
+     */
+    public function test_popupoverlayopacity_defaults_to_zero_point_six(): void {
+        $options = [];
+        $value   = isset( $options['popupoverlayopacity'] ) ? $options['popupoverlayopacity'] : '0.6';
+        $this->assertSame( '0.6', $value );
+    }
+
+    /**
+     * Overlay opacity is clamped between 0 and 1.
+     *
+     * @dataProvider overlayOpacityClampProvider
+     */
+    public function test_popupoverlayopacity_clamps_to_valid_range( float $input, float $expected ): void {
+        $value = max( 0, min( 1, $input ) );
+        $this->assertEquals( $expected, $value );
+    }
+
+    /**
+     * @return array<string, array<float>>
+     */
+    public static function overlayOpacityClampProvider(): array {
+        return [
+            'above max' => [ 1.5, 1 ],
+            'below min' => [ -0.2, 0 ],
+            'valid'     => [ 0.3, 0.3 ],
+        ];
     }
 }

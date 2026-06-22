@@ -1,7 +1,9 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 // Include files.
-include_once CPS_DIR . '/pages/plugins-page.php';
+require_once CPS_DIR . '/pages/plugins-page.php';
 
 // Admin CPS menu
 function cps_add_menus() {
@@ -29,7 +31,7 @@ add_action( 'admin_menu', 'cps_add_menus' );
 // Custom styles and scripts for admin pages
 function cps_admin_enqueue_scripts( $hook ) {
 	global $cps_plugins_page;
-	if ( $hook == $cps_plugins_page ) {
+	if ( $hook === $cps_plugins_page ) {
 		add_action( 'admin_enqueue_scripts', 'cps_admin_scripts', 9999 );
 	}
 }
